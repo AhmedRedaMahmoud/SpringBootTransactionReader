@@ -5,16 +5,15 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * Transaction Entity لجدول المعاملات
- * يحتوي على تفاصيل المعاملات المالية
+ * Transaction Entity for HR.MD_TRANSACTION_CURRENT table
+ * This entity maps to the HR.MD_TRANSACTION_CURRENT table in Oracle Database
  */
 @Entity
-@Table(name = "MD_TRANSACTION_CURRENT")
+@Table(name = "MD_TRANSACTION_CURRENT", schema = "HR")
+@org.hibernate.annotations.Immutable // Mark as read-only
 public class Transaction {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transaction_seq")
-    @SequenceGenerator(name = "transaction_seq", sequenceName = "TRANSACTION_SEQ", initialValue = 1, allocationSize = 1)
     @Column(name = "ID")
     private Long id;
 
@@ -51,116 +50,53 @@ public class Transaction {
     @Column(name = "OUTLET_CODE", length = 20)
     private String outletCode;
 
-    // Default constructor
-    public Transaction() {
-    }
-
-    // Constructor with main fields
-    public Transaction(String transId, String terminalId, String merchantName,
-            BigDecimal sourceAmount, LocalDateTime transactionDate) {
-        this.transId = transId;
-        this.terminalId = terminalId;
-        this.merchantName = merchantName;
-        this.sourceAmount = sourceAmount;
-        this.transactionDate = transactionDate;
-        this.processingDate = LocalDateTime.now();
-    }
-
-    // Getters and Setters
+    // Getters
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getTransId() {
         return transId;
     }
 
-    public void setTransId(String transId) {
-        this.transId = transId;
-    }
-
     public String getTerminalId() {
         return terminalId;
-    }
-
-    public void setTerminalId(String terminalId) {
-        this.terminalId = terminalId;
     }
 
     public String getMerchantName() {
         return merchantName;
     }
 
-    public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
-    }
-
     public BigDecimal getSourceAmount() {
         return sourceAmount;
-    }
-
-    public void setSourceAmount(BigDecimal sourceAmount) {
-        this.sourceAmount = sourceAmount;
     }
 
     public BigDecimal getMerchantCommission() {
         return merchantCommission;
     }
 
-    public void setMerchantCommission(BigDecimal merchantCommission) {
-        this.merchantCommission = merchantCommission;
-    }
-
     public LocalDateTime getTransactionDate() {
         return transactionDate;
-    }
-
-    public void setTransactionDate(LocalDateTime transactionDate) {
-        this.transactionDate = transactionDate;
     }
 
     public LocalDateTime getProcessingDate() {
         return processingDate;
     }
 
-    public void setProcessingDate(LocalDateTime processingDate) {
-        this.processingDate = processingDate;
-    }
-
     public String getMaskPan() {
         return maskPan;
-    }
-
-    public void setMaskPan(String maskPan) {
-        this.maskPan = maskPan;
     }
 
     public String getAuthorizationNumber() {
         return authorizationNumber;
     }
 
-    public void setAuthorizationNumber(String authorizationNumber) {
-        this.authorizationNumber = authorizationNumber;
-    }
-
     public String getMerchantAccountNumber() {
         return merchantAccountNumber;
     }
 
-    public void setMerchantAccountNumber(String merchantAccountNumber) {
-        this.merchantAccountNumber = merchantAccountNumber;
-    }
-
     public String getOutletCode() {
         return outletCode;
-    }
-
-    public void setOutletCode(String outletCode) {
-        this.outletCode = outletCode;
     }
 
     @Override

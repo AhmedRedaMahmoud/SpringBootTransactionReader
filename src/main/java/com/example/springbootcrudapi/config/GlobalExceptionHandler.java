@@ -4,12 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,57 +21,21 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
-     * معالج خطأ المصادقة
+     * معالج خطأ عدم وجود الكيان
      */
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<Map<String, Object>> handleAuthenticationException(
-            AuthenticationException ex, WebRequest request) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleEntityNotFoundException(
+            EntityNotFoundException ex, WebRequest request) {
 
-        logger.error("Authentication error: {}", ex.getMessage());
+        logger.error("Entity not found: {}", ex.getMessage());
 
         Map<String, Object> response = new HashMap<>();
-        response.put("error", "خطأ في المصادقة");
-        response.put("message", "فشل في المصادقة - تحقق من بيانات الدخول");
+        response.put("error", "الكيان غير موجود");
+        response.put("message", ex.getMessage());
         response.put("timestamp", System.currentTimeMillis());
         response.put("path", request.getDescription(false));
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-    }
-
-    /**
-     * معالج خطأ بيانات الدخول الخاطئة
-     */
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<Map<String, Object>> handleBadCredentialsException(
-            BadCredentialsException ex, WebRequest request) {
-
-        logger.error("Bad credentials: {}", ex.getMessage());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("error", "بيانات دخول خاطئة");
-        response.put("message", "اسم المستخدم أو كلمة المرور غير صحيحة");
-        response.put("timestamp", System.currentTimeMillis());
-        response.put("path", request.getDescription(false));
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
-    }
-
-    /**
-     * معالج خطأ عدم وجود صلاحية
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Map<String, Object>> handleAccessDeniedException(
-            AccessDeniedException ex, WebRequest request) {
-
-        logger.error("Access denied: {}", ex.getMessage());
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("error", "ممنوع الوصول");
-        response.put("message", "ليس لديك صلاحية للوصول لهذا المورد");
-        response.put("timestamp", System.currentTimeMillis());
-        response.put("path", request.getDescription(false));
-
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     /**
@@ -98,6 +60,19 @@ public class GlobalExceptionHandler {
      * معالج الأخطاء العامة
      */
     @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> handleException(
+            Exception ex, WebRequest request) {
+
+        logger.error("Unexpected error: {}", ex.getMessage());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", "خطأ غير متوقع");
+        response.put("message", ex.getMessage());
+        response.put("timestamp", System.currentTimeMillis());
+        response.put("path", request.getDescription(false));
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
     public ResponseEntity<Map<String, Object>> handleGlobalException(
             Exception ex, WebRequest request) {
 
